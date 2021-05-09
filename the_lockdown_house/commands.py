@@ -43,7 +43,11 @@ def parse_command(command_text: str) -> Optional[Tuple[str, str]]:
 
     # simplify and validate direction
     if verb == "go":
-        return validate_parse_directions(verb, predicate)
+        part1, part2 = validate_parse_directions(verb, predicate)
+        # handle validation
+        if not part1:
+            print(part2)
+        return part1, part2
 
     return verb, predicate
 

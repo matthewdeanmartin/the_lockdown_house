@@ -13,11 +13,11 @@ Can have mob  at place
     N
 """
 import dataclasses
-from typing import Optional, List, Dict
+from typing import Optional, List
 
-PLAYER:Optional["Player"]= None
+PLAYER: Optional["Player"] = None
 
-MOBS:List["Mob"] = []
+MOBS: List["Mob"] = []
 
 MAP = {
     "master bedroom": {
@@ -119,32 +119,54 @@ MAP = {
         "links": {
             "e": "infinity room",
             "w": "NaN"
-        },"inventory": ["food"],
+        }, "inventory": ["food"],
         "mobs": []
     },
     "NaN": {
         "description": "",
         "links": {
-        },"inventory": ["food"],
+        }, "inventory": ["food"],
         "mobs": []
     },
 }
+
 
 @dataclasses.dataclass
 class Player():
     current_location = "living room"
     inventory = []
     name = "Tano"
-    health_points = 277
+    health_points = 253
 
-    def fight(self, mob:"Mob", with_item:str)->int:
+    def use(self, predicate: str) -> str:
+        if predicate not in self.inventory:
+            message = "You can't use that yet."
+            return message
+        message = ""
+
+        if predicate == "food":
+            message += f"You ate the food it tasted like {predicate}. "
+            self.health_points += 100
+            if self.health_points > 253:
+                # You can only have 253 points
+                self.health_points = 253
+        else:
+            message += f"I don't know how to use {predicate}, yet. "
+
+        if predicate in ["food", "crate", "potion", "OP_crate", ]:
+            message += f"You no longer have {predicate} in inventory. "
+            self.inventory.remove(predicate)
+
+        return message
+
+    def fight(self, mob: "Mob", with_item: str) -> int:
         if with_item == "sword":
-            damage =  50
+            damage = 50
         elif with_item == "toy sword":
             damage = 10
         else:
             print(f"You can't fight with {with_item}")
-            damage =0
+            damage = 0
         print(f"You did {damage} damage to {mob.name}.")
         mob.health_points -= damage
         return damage
@@ -162,6 +184,7 @@ class Mob():
             self.inventory.remove(item)
             return item
         return None
+
 
 def create_mobs():
     tasi = Mob()
@@ -182,9 +205,11 @@ def create_mobs():
     dad.name = "Dad"
     MOBS.append(dad)
 
-def create_player()->None:
+
+def create_player() -> None:
     global PLAYER
     PLAYER = Player()
+
 
 def validate_links():
     complaints = []
@@ -220,6 +245,7 @@ def master_inventory():
         all_items.extend(mob.inventory)
     all_items.extend(PLAYER.inventory)
     return all_items
+
 
 if __name__ == '__main__':
     # complaints = validate_links()

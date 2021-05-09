@@ -55,10 +55,14 @@ def play():
                 print(f"I don't see any {predicate} here, do you?")
 
         if verb == "use":
-            print("Don't know how yet!")
+            foo = map.PLAYER.use(predicate)
+            print(foo)
+
 
         if verb == "inventory":
             print(", ".join(map.PLAYER.inventory))
+
+
 
 
 def fight(player: map.Player, mob: map.Mob):
