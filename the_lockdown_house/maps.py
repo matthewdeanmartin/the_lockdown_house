@@ -13,11 +13,11 @@ Can have mob  at place
     N
 """
 import dataclasses
-from typing import Optional
+from typing import Optional, List, Dict
 
 PLAYER:Optional["Player"]= None
 
-MOBS = []
+MOBS:List["Mob"] = []
 
 MAP = {
     "master bedroom": {
@@ -115,7 +115,7 @@ MAP = {
         "mobs": []
     },
     "basement": {
-        "description": "you see big white squares and only bule sky and no moon or sun",
+        "description": "you see big white squares and only blue sky and no moon or sun",
         "links": {
             "e": "infinity room",
             "w": "NaN"
