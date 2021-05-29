@@ -2,7 +2,6 @@
 
 2 word commands
 
-GET {ITEM}
 
 GO {DIRECTION}
 
@@ -11,7 +10,30 @@ USE {ITEM}
 1 word
 INVENTORY
 """
-from typing import Tuple, Optional
+from typing import Optional, Tuple
+
+
+def parse_chinese(command_text: str) -> str:
+    raise NotImplementedError("Maybe we should implement this someday")
+
+
+def parse_short_cuts(command_text: str) -> str:
+    # TODO: replace command text with long form if shortcut found
+    command_text = command_text.lower()
+
+    if command_text == "n":
+        command_text = "go north"
+        return command_text
+
+    if command_text == "w":
+        command_text = "go west"
+
+    if command_text == "e":
+        command_text = "go east"
+    if command_text == "s":
+        command_text = "go south"
+    # ELSE: return users text unchanged DONE!
+    return command_text
 
 
 def parse_command(command_text: str) -> Optional[Tuple[str, str]]:
@@ -22,6 +44,8 @@ def parse_command(command_text: str) -> Optional[Tuple[str, str]]:
     while "  " in command_text:
         command_text = command_text.replace("  ", " ")
 
+    command_text = parse_short_cuts(command_text)
+
     # split on spaces
     parts = command_text.split(" ")
 
@@ -29,7 +53,7 @@ def parse_command(command_text: str) -> Optional[Tuple[str, str]]:
     if len(parts) == 1:
         verb = parts[0]
         predicate = ""
-        if verb in ["inventory"]:
+        if verb in ["inventory", "hp", "quit"]:
             return verb, predicate
 
     # handle bad input (too short)
@@ -49,6 +73,12 @@ def parse_command(command_text: str) -> Optional[Tuple[str, str]]:
             print(part2)
         return part1, part2
 
+    if verb == "open":
+        if predicate == "crate":
+            return verb, predicate
+        else:
+            return None, "You can only open crates"
+
     return verb, predicate
 
 
@@ -62,10 +92,15 @@ def validate_parse_directions(verb: str, direction: str) -> Tuple[Optional[str],
             return verb, direction
 
         else:
-            return None,"Bad direction, you idiot! Only n, s, e, w!"
+            return None, "Bad direction, you idiot! Only n, s, e, w!"
 
     else:
         return None, "Missing direction"
 
 
-print(validate_parse_directions("go", "zud"))
+if __name__ == '__main__':
+    print(validate_parse_directions("go", "zud"))
+
+crate = []
+crate.append("potion")
+crate.append("dark sword")

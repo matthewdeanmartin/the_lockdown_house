@@ -13,122 +13,12 @@ Can have mob  at place
     N
 """
 import dataclasses
-from typing import Optional, List
+from typing import Optional
 
-PLAYER: Optional["Player"] = None
 
-MOBS: List["Mob"] = []
-
-MAP = {
-    "master bedroom": {
-        "links": {
-            "e": "hallway south"
-        },
-        "inventory": ["sword", "cookies", "milk"],
-        "mobs": []
-    },
-    "kids bedroom": {
-        "links": {
-            "e": "hallway north"
-        },
-        "inventory": ["toy sword", "money"],
-        "mobs": []
-    },
-    "far bedroom": {
-        "links": {
-            "s": "hallway north"
-        },
-        "inventory": [],
-        "mobs": []
-    },
-    "hallway south": {
-        "links": {
-            "w": "master bedroom",
-            "n": "hallway north",
-            "e": "living room",
-            "s": "bathroom"
-        },
-        "inventory": [],
-        "mobs": []
-    },
-    "hallway north": {
-        "links": {
-            "w": "kids bedroom",
-            "s": "hallway south",
-            "n": "far bedroom",
-            "e": "chamber"
-        },
-        "inventory": [],
-        "mobs": []
-    },
-    "living room": {
-        "links": {
-            "s": "kitchen",
-            "w": "hallway south"
-        },
-        "inventory": [],
-        "mobs": []
-    },
-    "bathroom": {
-        "links": {
-            "s": "kitchen",
-            "w": "hallway south"
-        },
-        "inventory": [],
-        "mobs": []
-    },
-    "kitchen": {
-        "links": {
-            "s": "kitchen",
-            "w": "hallway south",
-            "n": "sus room"
-
-        },
-        "inventory": ["food"],
-        "mobs": []
-    },
-    "chamber": {
-        "links": {
-            "w": "hallway north"
-        },
-        "inventory": ["food"],
-        "mobs": []
-    },
-
-    "sus room": {
-        "description": "when the imposter is sus....",
-        "links": {
-            "n": "basement",
-            # "s": "among us",
-            "e": "infinity room"
-        },
-        "inventory": ["food"],
-        "mobs": []
-    },
-    "infinity room": {
-        "description": "when the imposter is sus....",
-        "links": {
-            "e": "infinity room",
-            "w": "NaN"
-        },
-        "inventory": [],
-        "mobs": []
-    },
-    "basement": {
-        "description": "you see big white squares and only blue sky and no moon or sun",
-        "links": {
-            "e": "infinity room",
-            "w": "NaN"
-        }, "inventory": ["food"],
-        "mobs": []
-    },
-    "NaN": {
-        "description": "",
-        "links": {
-        }, "inventory": ["food"],
-        "mobs": []
-    },
-}
+# PLAYER: Optional["Player"] = None
+#
+# MOBS: List["Mob"] = []
 
 
 @dataclasses.dataclass
@@ -186,71 +76,219 @@ class Mob():
         return None
 
 
-def create_mobs():
-    tasi = Mob()
-    tasi.inventory.extend(["cookies", "donuts", "lion toy"])
-    tasi.name = "Tasi"
-    tasi.current_location = "kids bedroom"
-    MOBS.append(tasi)
+@dataclasses.dataclass
+class Map():
 
-    mom = Mob()
-    mom.inventory.extend(["bagel", "pick axe", "car keys"])
-    mom.current_location = "master bedroom"
-    mom.name = "Mom"
-    MOBS.append(mom)
+    def __init__(self):
+        self.rooms = {}
+        self.player = Player()
+        self.mobs = []
 
-    dad = Mob()
-    dad.current_location = "living room"
-    dad.inventory.extend(["sword", "spell book"])
-    dad.name = "Dad"
-    MOBS.append(dad)
+    def create_mobs(self):
+        tasi = Mob()
+        tasi.inventory.extend(["cookies", "donuts", "lion toy"])
+        tasi.name = "Tasi"
+        tasi.current_location = "kids bedroom"
+        self.mobs.append(tasi)
 
+        mom = Mob()
+        mom.inventory.extend(["bagel", "pick axe", "car keys"])
+        mom.current_location = "master bedroom"
+        mom.name = "Mom"
+        self.mobs.append(mom)
 
-def create_player() -> None:
-    global PLAYER
-    PLAYER = Player()
+        dad = Mob()
+        dad.current_location = "living room"
+        dad.inventory.extend(["sword", "spell book"])
+        dad.name = "Dad"
+        self.mobs.append(dad)
 
+        # place mobs on map
+        for mob in self.mobs:
+            self.rooms[mob.current_location]["mobs"].append(mob)
 
-def validate_links():
-    complaints = []
-    for room, description in MAP.items():
-        for direction, linked_room in description["links"].items():
-            if linked_room in MAP.keys():
-                pass
+    def validate_links(self):
+        complaints = []
+        for room, description in self.rooms.items():
+            for direction, linked_room in description["links"].items():
+                if linked_room in self.rooms.keys():
+                    pass
+                else:
+                    complaints.append(f"Room {room} has a bad link '{linked_room}' is not a known place")
+        for room, description in self.rooms.items():
+            if not description["links"]:
+                complaints.append(f"Print can't exit room {room}")
+
+        all_links = []
+        for other_room, description in self.rooms.items():
+            links = description["links"].items()
+            for link, reachable_room in links:
+                all_links.append(reachable_room)
+
+        for room in self.rooms.keys():
+            if room in all_links:
+                continue
             else:
-                complaints.append(f"Room {room} has a bad link '{linked_room}' is not a known place")
-    for room, description in MAP.items():
-        if not description["links"]:
-            complaints.append(f"Print can't exit room {room}")
+                complaints.append(f"Room {room} is not reachable!")
+        return complaints
 
-    all_links = []
-    for other_room, description in MAP.items():
-        links = description["links"].items()
-        for link, reachable_room in links:
-            all_links.append(reachable_room)
-
-    for room in MAP.keys():
-        if room in all_links:
-            continue
-        else:
-            complaints.append(f"Room {room} is not reachable!")
-    return complaints
+    def master_inventory(self):
+        all_items = []
+        for room, description in self.rooms.items():
+            all_items.extend(description["inventory"])
+        for mob in self.mobs:
+            all_items.extend(mob.inventory)
+        all_items.extend(self.player.inventory)
+        return all_items
 
 
-def master_inventory():
-    all_items = []
-    for room, description in MAP.items():
-        all_items.extend(description["inventory"])
-    for mob in MOBS:
-        all_items.extend(mob.inventory)
-    all_items.extend(PLAYER.inventory)
-    return all_items
+def map_factory() -> Map:
+    map = Map()
+    map.rooms = {
+        "master bedroom": {
+            "links": {
+                "e": "hallway south"
+            },
+            "inventory": ["sword", "cookies", "milk"],
+            "mobs": []
+        },
+        "kids bedroom": {
+            "links": {
+                "e": "hallway north"
+            },
+            "inventory": ["toy sword", "money"],
+            "mobs": []
+        },
+        "far bedroom": {
+            "links": {
+                "s": "hallway north"
+            },
+            "inventory": [],
+            "mobs": []
+        },
+        "hallway south": {
+            "links": {
+                "w": "master bedroom",
+                "n": "hallway north",
+                "e": "living room",
+                "s": "bathroom"
+            },
+            "inventory": [],
+            "mobs": []
+        },
+        "hallway north": {
+            "links": {
+                "w": "kids bedroom",
+                "s": "hallway south",
+                "n": "far bedroom",
+                "e": "chamber"
+            },
+            "inventory": [],
+            "mobs": []
+        },
+        "living room": {
+            "links": {
+                "s": "kitchen",
+                "w": "hallway south"
+            },
+            "inventory": [["apple", "orange"]],
+            "mobs": []
+        },
+        "bathroom": {
+            "links": {
+                "s": "kitchen",
+                "w": "hallway south"
+            },
+            "inventory": [],
+            "mobs": []
+        },
+        "kitchen": {
+            "links": {
+                "s": "kitchen",
+                "w": "hallway south",
+                "n": "sus room"
+
+            },
+            "inventory": ["food", ["dark sword", "cat_food"]],
+            "mobs": []
+        },
+        "chamber": {
+            "links": {
+                "w": "hallway north"
+            },
+            "inventory": ["food", "HOLY_sword", "godly_power_ball", ],
+            "mobs": []
+        },
+        "secret base": {
+            "description": "it is very secret",
+            "links": {
+                "e": "sus room",
+                "w": "infinity room"
+            }, "mobs": [], },
+        "sus room": {
+            "description": "when the imposter is sus....",
+            "links": {
+                "n": "basement",
+                # "s": "among us",
+                "e": "infinity room"
+            },
+            "inventory": ["food"],
+            "mobs": []
+        },
+        "infinity room": {
+            "description": "when the imposter is sus....",
+            "links": {
+                "e": "infinity room",
+                "w": "NaN"
+            },
+            "inventory": [],
+            "mobs": []
+        },
+        "basement": {
+            "description": "you see big white squares and only blue sky and no moon or sun",
+            "links": {
+                "e": "infinity room",
+                "w": "NaN"
+            }, "inventory": ["food"],
+            "mobs": []
+        },
+        "NaN": {
+            "description": "",
+            "links": {
+            }, "inventory": ["food"],
+            "mobs": []
+        },
+        "room of the gods": {
+            "description": "WHAt THE H---!!!!",
+            "links": {
+                "e": "infinity room",
+                "w": "NaN",
+            },
+            "mobs": ["the GOD"]
+        }
+    }
+    tiky = {
+        "description": "WHAt THE H---!!!!",
+        "links": {
+            "w": "sus room",
+            "s": "NaN",
+        },
+        "mobs": ["the GOD"]
+    }
+    map.rooms["tiky"] = tiky
+    # x = {}
+    # x["key"] ="value"
+
+    return map
 
 
 if __name__ == '__main__':
     # complaints = validate_links()
     # for complaint in complaints:
     #     print(complaint)
-    create_mobs()
-    create_player()
-    print(set(master_inventory()))
+    def run():
+        game_map = Map()
+        print(set(game_map.master_inventory()))
+
+
+    run()
