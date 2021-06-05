@@ -11,6 +11,7 @@ def test_describe_things_in_room():
     # You can see food, crate laying around
     assert d == "You can see food, crate laying around"
 
+
 def test_open_crate():
     # arrange
     inventory = [
@@ -29,7 +30,6 @@ def test_open_crate():
     }
     # act
     jke = open_crate(room)
-
 
     # assert
     assert len(room["inventory"]) == 3

@@ -34,6 +34,7 @@ def test_validate_parse_bad_directions_not_nsew():
     assert zoobydooby[0] is None
     assert zoobydooby[1]
 
+
 def test_parse_short_cuts():
     # arrange - set up a known initial state, arguments, etc.
     users_command = "go n"
@@ -42,6 +43,7 @@ def test_parse_short_cuts():
 
     # assert - assert that we get the result (return value) that we expected
     assert kll == users_command
+
 
 def test_parse_short_cuts_wild_text():
     # arrange - set up a known initial state, arguments, etc.
@@ -62,6 +64,7 @@ def test_parse_short_cuts_empty_string():
     # assert - assert that we get the result (return value) that we expected
     assert kll == users_command
 
+
 def test_parse_short_cuts_n_becomes_go_north():
     # arrange - set up a known initial state, arguments, etc.
     users_command = "n"
@@ -70,6 +73,7 @@ def test_parse_short_cuts_n_becomes_go_north():
 
     # assert - assert that we get the result (return value) that we expected
     assert kll == "go north"
+
 
 def test_parse_short_cuts_s_becomes_go_south():
     # arrange - set up a known initial state, arguments, etc.
@@ -80,6 +84,7 @@ def test_parse_short_cuts_s_becomes_go_south():
     # assert - assert that we get the result (return value) that we expected
     assert kll == "go south"
 
+
 def test_parse_short_cuts_e_becomes_go_east():
     # arrange - set up a known initial state, arguments, etc.
     users_command = "e"
@@ -88,6 +93,7 @@ def test_parse_short_cuts_e_becomes_go_east():
 
     # assert - assert that we get the result (return value) that we expected
     assert kll == "go east"
+
 
 def test_parse_short_cuts_W_becomes_go_west_capitalized():
     # arrange - set up a known initial state, arguments, etc.

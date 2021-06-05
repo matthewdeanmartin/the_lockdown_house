@@ -8,8 +8,10 @@ import the_lockdown_house.maps as maps
 from the_lockdown_house.authenticate import login
 from the_lockdown_house.commands import parse_command
 from the_lockdown_house.maps import Mob, Player
+from the_lockdown_house.payments import handle_payments, lookup_paid_users
 
 LOG: List[str] = []
+
 
 
 def print(*args, sep=' ', end='\n', file=None) -> None:
@@ -59,15 +61,36 @@ class Game():
 
     def play(self, input) -> List[str]:
         # TODO: re-enable auth when we can save a game & ask for $$$$$
-        # jke = input("give me your password.")
-        # err = input("give me your username.")
-        # d = login(err, jke)
-        # if d:
-        #     print(d)
-        #     print("you are in!")
-        # else:
-        #     print("GO AWAY HACKER!!!!!")
-        #     exit()
+        password = input("give me your password.")
+        username = input("give me your username.")
+        d = login(username, password)
+        if d:
+            print(d)
+            print("you are in!")
+        else:
+            print("GO AWAY HACKER!!!!!")
+            exit()
+
+        found = lookup_paid_users(username)
+        money = 0
+        if not found:
+            money = input("i need more money")
+
+        if found:
+            print("Thanks for being a customer, you can play.")
+        else:
+            print("I don't see you on the paid customer list, you must pay now.")
+            payment_was_successful, message = handle_payments(username, float(money))
+            if payment_was_successful:
+                print("the payment was successful")
+                print(message)
+            else:
+                print("the payment was not successful")
+                print(message)
+                exit()
+
+
+
 
         LOG.clear()
         print("You are playing the Lockdown game. You are in an apartment full of rooms that you think you"
@@ -108,7 +131,6 @@ class Game():
                 continue
             if verb == "open":
                 open_crate(room=self.map.rooms[self.map.player.current_location])
-
 
             print(f"Sorry, don't know how to handle the command {verb} {predicate}")
 

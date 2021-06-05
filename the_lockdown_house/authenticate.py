@@ -23,8 +23,6 @@ user_spider = {
     "password": "creps"
 }
 
-
-
 user_database = [
     user_eloise,
     user_mmartin,
@@ -32,13 +30,13 @@ user_database = [
     user_spider,
 ]
 
+
 def login(player_username: str, player_password: str) -> bool:
     for current_user in user_database:
         # print(user["name"])
         if player_password == current_user["password"] and current_user["name"] == player_username:
             return True
     return False
-
 
 
 if __name__ == '__main__':
@@ -50,5 +48,6 @@ if __name__ == '__main__':
         else:
             print("go away hacker")
             exit()
+
 
     run()
