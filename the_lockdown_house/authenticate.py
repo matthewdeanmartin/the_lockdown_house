@@ -7,20 +7,20 @@ from typing import Dict
 
 user_mmartin: Dict[str, str] = {
     "name": "mmartin",
-    "password": "chunkstyle"
+    "password": "a"
 }
 
 foobar = {"name": "tano",
-          "password": "fdy"
+          "password": "a"
           }
 
 user_eloise = {
     "name": "eloise",
-    "password": "some_secret"
+    "password": "a"
 }
 user_spider = {
     "name": "spider",
-    "password": "creps"
+    "password": "a"
 }
 
 user_database = [
